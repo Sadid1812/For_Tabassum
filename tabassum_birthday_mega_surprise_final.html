@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Tabassum</title>
+<link rel="icon" type="image/png" href="favicon.png">
+
+<!--
+  ============================================================
+  HOW TO CUSTOMIZE THIS SITE — read before you host it
+  ============================================================
+  1. YOUR VIDEO — search "YOUR VIDEO GOES HERE".
+     Put wishes.mp4 (and optionally poster.jpg) next to this file.
+
+  2. YOUR PHOTOS — search "YOUR PHOTOS GO HERE".
+     Make a /photos folder next to this file with photo-1.jpg
+     through photo-6.jpg. Also see "HERO PORTRAIT" below —
+     that's a bigger single photo slot in the split hero layouts.
+
+  3. HERO PORTRAIT — search "HERO PORTRAIT GOES HERE" (there are two,
+     one on the countdown page, one on the reveal page). Add
+     hero-photo.jpg next to this file — a nice portrait of you two,
+     or of her. It sits inside the leafy frame.
+
+  4. YOUR MUSIC — search "YOUR MUSIC GOES HERE". Add music.mp3.
+
+  5. THE LETTER — search "YOUR LETTER GOES HERE" and rewrite it.
+
+  6. HIDDEN PREVIEW BUTTON (for you only) — bottom-right corner of
+     the countdown page, a small firefly that glows slightly
+     brighter than the rest and sits still instead of drifting.
+     Click it to jump to the reveal page any time.
+
+  7. THE DATE — search "TARGET DATE".
+  8. FINAL CLUE — edit the riddle in the "FINAL CLUE" section below.
+  9. MOBILE — gallery intentionally becomes one card per row on phones so
+     photos never become tiny or oversized, and captions stay attached to
+     their own card.
+  ============================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Herr+Von+Muellerhoff&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#1B140F;
+    --emerald-deep:#0C1B16;
+    --emerald:#122720;
+    --emerald-light:#1D392E;
+    --gold:#C7A45E;
+    --gold-bright:#EFD8A2;
+    --gold-dim:#8C7238;
+    --ivory:#F3ECDD;
+    --ivory-dim:#E8DFCB;
+    --sage:#93A695;
+    --hairline:rgba(199,164,94,0.35);
+  }
+
+  *, *::before, *::after{ box-sizing:border-box; }
+
+  html{
+    scroll-behavior:smooth;
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
+  }
+
+  body{
+    margin:0;
+    background:var(--emerald-deep);
+    color:var(--ivory);
+    font-family:'Cormorant Garamond', serif;
+    overflow-x:hidden;
+    min-width:320px;
+  }
+
+  img, video{
+    display:block;
+    max-width:100%;
+  }
+
+  button, video, img{
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  button{
+    font:inherit;
+  }
+
+  .eyebrow{
+    font-family:'Cormorant Garamond', serif;
+    font-size:0.8rem;
+    letter-spacing:0.38em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:500;
+  }
+
+  h1, h2, h3{
+    font-family:'Playfair Display', serif;
+    font-weight:500;
+    color:var(--ivory);
+  }
+
+  .script{
+    font-family:'Herr Von Muellerhoff', cursive;
+    font-weight:400;
+    line-height:1;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+  }
+
+  /* ============ FIREFLIES (shared ambient layer) ============ */
+  .fireflies{
+    position:absolute; inset:0;
+    overflow:hidden;
+    pointer-events:none;
+    z-index:1;
+  }
+  .firefly{
+    position:absolute;
+    width:4px; height:4px;
+    border-radius:50%;
+    background:var(--gold-bright);
+    box-shadow:0 0 6px 2px rgba(239,216,162,0.7), 0 0 16px 6px rgba(199,164,94,0.25);
+    opacity:0;
+    animation:drift linear infinite, glow ease-in-out infinite;
+  }
+  @keyframes drift{
+    0%{ transform:translate(0,0); }
+    100%{ transform:translate(var(--dx), var(--dy)); }
+  }
+  @keyframes glow{
+    0%, 100%{ opacity:0; }
+    50%{ opacity:var(--peak, 0.85); }
+  }
+
+  /* ============ VINE CORNER (reused SVG-in-CSS decoration) ============ */
+  .vine{
+    position:absolute;
+    width:120px; height:120px;
+    opacity:0.85;
+    pointer-events:none;
+    z-index:2;
+  }
+  .vine.tl{ top:14px; left:14px; }
+  .vine.tr{ top:14px; right:14px; transform:scaleX(-1); }
+  .vine.bl{ bottom:14px; left:14px; transform:scaleY(-1); }
+  .vine.br{ bottom:14px; right:14px; transform:scale(-1,-1); }
+
+  /* ============ REVEAL ANIMATION UTIL ============ */
+  .reveal-up{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity 0.9s cubic-bezier(.2,.7,.2,1), transform 0.9s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal-up.is-visible{ opacity:1; transform:translateY(0); }
+  .reveal-up.d1{ transition-delay:0.1s; }
+  .reveal-up.d2{ transition-delay:0.25s; }
+  .reveal-up.d3{ transition-delay:0.4s; }
+
+  /* ============ COUNTDOWN PAGE ============ */
+
+  #countdownPage{
+    min-height:100vh;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:6vh 6vw;
+    background:
+      radial-gradient(ellipse at 30% 20%, var(--emerald-light) 0%, var(--emerald) 45%, var(--emerald-deep) 100%);
+    transition:opacity 1.1s ease, filter 1.1s ease;
+  }
+
+  .countdown-layout{
+    position:relative;
+    z-index:3;
+    max-width:1100px;
+    width:100%;
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    align-items:center;
+    gap:60px;
+  }
+
+  .countdown-text{ text-align:left; }
+
+  .crest{
+    width:74px; height:74px;
+    margin-bottom:26px;
+    border-radius:50%;
+    border:1px solid var(--gold);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .crest::before{
+    content:"";
+    position:absolute; inset:6px;
+    border:1px solid var(--gold-dim);
+    border-radius:50%;
+  }
+  .crest span{
+    font-family:'Herr Von Muellerhoff', cursive;
+    font-size:2rem;
+    color:var(--gold-bright);
+  }
+
+  .display-name{
+    font-family:'Herr Von Muellerhoff', cursive;
+    font-size:clamp(3.6rem, 9vw, 6.4rem);
+    color:var(--gold-bright);
+    margin:6px 0 2px;
+    line-height:0.95;
+  }
+
+  .subtitle{
+    font-size:1.15rem;
+    font-style:italic;
+    color:var(--ivory-dim);
+    letter-spacing:0.02em;
+    margin-bottom:44px;
+  }
+
+  .countdown-grid{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:clamp(7px, 2.4vw, 24px);
+    margin-bottom:40px;
+    flex-wrap:nowrap;
+    max-width:100%;
+  }
+
+  .count-block{ display:flex; flex-direction:column; align-items:center; min-width:66px; }
+  .count-block .num{
+    font-family:'Playfair Display', serif;
+    font-size:clamp(2.2rem, 5.6vw, 3.2rem);
+    font-weight:600;
+    color:var(--gold-bright);
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+    display:inline-block;
+    transition:transform 0.25s ease, opacity 0.25s ease;
+  }
+  .count-block .num.tick{ transform:translateY(-4px); opacity:0.4; }
+  .count-block label{
+    margin-top:9px;
+    font-size:0.66rem;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--gold-dim);
+  }
+  .count-sep{ font-family:'Playfair Display', serif; font-size:clamp(1.4rem, 3vw, 1.9rem); color:var(--gold-dim); }
+
+  .hairline{ width:56px; height:1px; background:var(--gold); opacity:0.6; margin-bottom:20px; }
+  .footer-note{ font-style:italic; font-size:1rem; color:var(--ivory-dim); opacity:0.85; }
+
+  .portrait-frame{
+    position:relative;
+    width:100%;
+    max-width:520px;
+    aspect-ratio:3 / 4;
+    border:1px solid var(--gold-dim);
+    padding:clamp(8px, 1.6vw, 16px);
+    background:rgba(18,39,32,0.5);
+    margin-inline:auto;
+  }
+  .portrait-frame .inner{
+    width:100%; height:100%;
+    border:1px solid var(--hairline);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+    position:relative;
+    background:var(--emerald-light);
+  }
+  .portrait-frame img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .portrait-frame .placeholder-text{
+    font-family:'Herr Von Muellerhoff', cursive;
+    font-size:1.6rem;
+    color:var(--gold-dim);
+    text-align:center;
+    padding:20px;
+  }
+
+  /* hidden firefly / owner preview trigger */
+  .hidden-seal{
+    position:absolute;
+    bottom:34px; right:34px;
+    width:16px; height:16px;
+    border-radius:50%;
+    background:var(--gold-bright);
+    box-shadow:0 0 8px 3px rgba(239,216,162,0.8), 0 0 20px 8px rgba(199,164,94,0.3);
+    border:none;
+    cursor:pointer;
+    opacity:0.55;
+    z-index:6;
+    transition:opacity 0.3s ease, transform 0.3s ease;
+  }
+  .hidden-seal:hover{ opacity:1; transform:scale(1.3); }
+
+  @media (max-width:820px){
+    .countdown-layout{ grid-template-columns:1fr; gap:36px; }
+    .countdown-text{ text-align:center; }
+    .crest{ margin:0 auto 22px; }
+    .countdown-grid{ justify-content:center; }
+    .portrait-frame{ max-width:340px; margin:0 auto; aspect-ratio:4/3; }
+  }
+
+  @media (max-height:720px) and (min-width:821px){
+    #countdownPage{
+      padding-top:5vh;
+      padding-bottom:5vh;
+    }
+
+    .countdown-layout{
+      gap:42px;
+    }
+
+    .portrait-frame{
+      max-width:430px;
+    }
+  }
+
+  /* ============ REVEAL PAGE ============ */
+
+  #revealPage{ background:var(--ivory); color:var(--ink); }
+  #revealPage[hidden]{ display:none; }
+
+  .music-toggle{
+    position:fixed;
+    top:max(14px, env(safe-area-inset-top));
+    right:max(14px, env(safe-area-inset-right));
+    z-index:50;
+    background:rgba(18,39,32,0.94);
+    color:var(--gold-bright);
+    border:1px solid var(--gold-dim);
+    font-family:'Cormorant Garamond', serif;
+    font-size:clamp(0.68rem, 2vw, 0.8rem);
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    padding:9px 14px;
+    border-radius:999px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background 0.3s ease, transform 0.3s ease;
+  }
+  .music-toggle:hover{ background:var(--emerald-light); transform:translateY(-1px); }
+
+  .hero{
+    position:relative;
+    min-height:92vh;
+    display:grid;
+    grid-template-columns:1.05fr 0.95fr;
+    align-items:center;
+    gap:50px;
+    padding:10vh 6vw;
+    background:
+      radial-gradient(ellipse at 20% 15%, var(--emerald-light) 0%, var(--emerald) 50%, var(--emerald-deep) 100%);
+    color:var(--ivory);
+    overflow:hidden;
+  }
+  .hero-text{ position:relative; z-index:3; }
+  .hero-text .eyebrow{ margin-bottom:18px; }
+  .hero-text h1{
+    font-family:'Herr Von Muellerhoff', cursive;
+    font-size:clamp(4rem, 9vw, 7rem);
+    color:var(--gold-bright);
+    line-height:0.9;
+  }
+  .hero-text .hero-sub{
+    margin-top:24px; max-width:480px;
+    font-size:1.2rem; font-style:italic;
+    color:var(--ivory-dim); line-height:1.6;
+  }
+  .hero-text .hairline{ margin-top:34px; }
+
+  .hero-portrait{ position:relative; z-index:3; }
+
+  @media (max-width:900px){
+    .hero{
+      grid-template-columns:1fr;
+      text-align:center;
+      min-height:auto;
+      padding-top:clamp(100px, 15vh, 150px);
+      padding-bottom:clamp(64px, 10vh, 100px);
+      gap:clamp(34px, 7vw, 56px);
+    }
+
+    .hero-text{ order:1; }
+    .hero-portrait{
+      order:2;
+      width:min(100%, 340px);
+      margin:0 auto;
+    }
+
+    .hero-text .hairline{
+      margin-left:auto;
+      margin-right:auto;
+    }
+
+    .hero-text .hero-sub{
+      max-width:34rem;
+      margin-left:auto;
+      margin-right:auto;
+    }
+  }
+
+  section{
+    padding:clamp(72px, 9vw, 110px) clamp(18px, 6vw, 80px);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .section-head{
+    text-align:center;
+    width:min(100%, 600px);
+    margin:0 auto clamp(38px, 6vw, 56px);
+    overflow-wrap:anywhere;
+  }
+  .section-head h2{
+    font-family:'Herr Von Muellerhoff', cursive;
+    font-size:clamp(2.6rem, 6vw, 3.6rem);
+    color:var(--emerald);
+    margin-top:6px;
+  }
+  .letter-section .section-head h2{ color:var(--gold-bright); }
+
+  /* video */
+  .video-section{
+    background:
+      radial-gradient(circle at 50% 0%, rgba(199,164,94,.10), transparent 34%),
+      linear-gradient(180deg, #F7E8CB 0%, #F3DEB8 100%);
+    color:var(--emerald-deep);
+  }
+
+  .video-section .section-head h2{
+    color:var(--emerald-deep);
+  }
+
+  .video-section .eyebrow{
+    color:#8D6430;
+  }
+
+  .video-section .video-frame{
+    background:var(--emerald-deep);
+    border-color:var(--gold-dim);
+    box-shadow:
+      0 24px 55px -28px rgba(15,30,25,.45),
+      0 8px 18px -12px rgba(15,30,25,.20);
+  }
+
+  .video-section .video-frame video{
+    background:#071712;
+    border-color:rgba(199,164,94,.55);
+  }
+
+  .video-section .video-caption{
+    color:#5D5143;
+  }
+
+  .video-section::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:min(88%, 680px);
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    opacity:.65;
+  }
+  .video-frame{
+    width:min(100%, 820px);
+    margin:0 auto;
+    padding:clamp(7px, 1.5vw, 14px);
+    background:var(--emerald);
+    border:1px solid var(--gold-dim);
+    box-shadow:0 30px 70px -30px rgba(15,30,25,0.4);
+    position:relative;
+    border-radius:2px;
+  }
+  .video-frame video{
+    width:100%;
+    height:auto;
+    aspect-ratio:16 / 9;
+    object-fit:contain;
+    background:#07120f;
+    border:1px solid var(--gold-dim);
+  }
+  .video-caption{ text-align:center; margin-top:22px; font-style:italic; color:#6b5f4f; }
+
+  /* letter */
+  .letter-section{ background:var(--emerald-deep); color:var(--ivory); position:relative; overflow:hidden; }
+  .letter-card p{ font-size:1.2rem; line-height:1.9; margin-bottom:20px; color:var(--ivory-dim); }
+
+  /* gallery */
+  .gallery-section{ background:var(--ivory); }
+  .gallery-grid{
+    width:min(100%, 1000px);
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:clamp(14px, 2.2vw, 24px);
+    align-items:stretch;
+  }
+
+  .gallery-item{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    border:1px solid var(--gold-dim);
+    padding:clamp(6px, 1vw, 8px);
+    background:#fff;
+    transition:transform 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .gallery-item:hover{
+    transform:translateY(-6px);
+    box-shadow:0 20px 40px -20px rgba(0,0,0,0.3);
+  }
+
+  .gallery-item .frame-inner{
+    width:100%;
+    aspect-ratio:4 / 5;
+    position:relative;
+    overflow:hidden;
+    flex:0 0 auto;
+    background:var(--ivory-dim);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .gallery-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    transition:transform 0.6s ease;
+  }
+
+  .gallery-item:hover img{ transform:scale(1.04); }
+
+  .memory-caption{
+    min-height:3.1em;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0;
+    padding:clamp(10px, 1.5vw, 14px) 8px clamp(9px, 1.2vw, 12px);
+    text-align:center;
+    color:#6b5f4f;
+    font-size:clamp(0.86rem, 1.25vw, 0.98rem);
+    line-height:1.35;
+    font-style:italic;
+  }
+  .gallery-item .placeholder-text{
+    font-family:'Herr Von Muellerhoff', cursive;
+    font-size:1.3rem; color:var(--gold-dim); text-align:center; padding:10px;
+  }
+
+  @media (max-width:640px){
+    section{
+      padding:clamp(58px, 13vw, 76px) 16px;
+    }
+
+    .gallery-grid{
+      grid-template-columns:1fr;
+      width:min(100%, 390px);
+      gap:18px;
+    }
+
+    .gallery-item{
+      width:100%;
+    }
+
+    .gallery-item .frame-inner{
+      aspect-ratio:4 / 3;
+    }
+
+    .memory-caption{
+      min-height:0;
+      padding:12px 10px 14px;
+      font-size:0.92rem;
+    }
+
+    .clue-card{
+      padding:42px 22px;
+    }
+
+    .clue-riddle{
+      font-size:1.14rem;
+      line-height:1.7;
+    }
+
+    .answer-big{
+      font-size:2.25rem;
+    }
+
+    .video-caption{
+      padding-inline:8px;
+    }
+
+    .music-toggle{
+      max-width:calc(100vw - 28px);
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+  }
+
+  @media (max-width:380px){
+    .countdown-grid{
+      gap:5px;
+    }
+
+    .count-block{
+      min-width:0;
+      flex:1 1 0;
+    }
+
+    .count-block .num{
+      font-size:clamp(1.75rem, 9vw, 2.35rem);
+    }
+
+    .count-sep{
+      font-size:1.2rem;
+    }
+
+    .count-block label{
+      font-size:0.56rem;
+      letter-spacing:0.2em;
+    }
+
+    .display-name{
+      font-size:clamp(3.2rem, 17vw, 4.8rem);
+    }
+
+    .portrait-frame{
+      max-width:300px;
+    }
+  }
+
+  @media (min-width:641px) and (max-width:980px){
+    .gallery-grid{
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      width:min(100%, 760px);
+    }
+  }
+
+  @media (hover:none){
+    .gallery-item:hover{
+      transform:none;
+      box-shadow:none;
+    }
+
+    .gallery-item:hover img{
+      transform:none;
+    }
+  }
+
+  /* ============ FINAL CLUE ============ */
+  .clue-section{
+    background:
+      radial-gradient(ellipse at 50% 10%, var(--emerald-light) 0%, var(--emerald) 48%, var(--emerald-deep) 100%);
+    color:var(--ivory);
+    overflow:hidden;
+  }
+  .clue-section .section-head{
+    position:relative;
+    z-index:3;
+  }
+  .clue-section .section-head h2{
+    color:var(--gold-bright);
+  }
+  .clue-card{
+    position:relative;
+    z-index:3;
+    width:min(100%, 650px);
+    margin:0 auto;
+    padding:clamp(38px, 6vw, 62px) clamp(22px, 5vw, 52px);
+    text-align:center;
+    background:rgba(12,27,22,0.72);
+    border:1px solid var(--hairline);
+    box-shadow:0 30px 80px -35px rgba(0,0,0,0.55);
+  }
+  .clue-intro{
+    color:var(--ivory-dim);
+    font-size:1.18rem;
+    line-height:1.75;
+    margin-bottom:8px;
+  }
+  .clue-divider{
+    width:58px;
+    height:1px;
+    background:var(--gold);
+    opacity:0.7;
+    margin:28px auto 30px;
+  }
+  .clue-riddle{
+    color:var(--gold-bright);
+    font-family:'Playfair Display', serif;
+    font-size:1.35rem;
+    line-height:1.8;
+    font-style:italic;
+  }
+  .clue-hint{
+    margin-top:22px;
+    color:var(--ivory-dim);
+    font-size:1rem;
+    letter-spacing:0.08em;
+  }
+  .answer-reveal{
+    margin-top:30px;
+    padding:12px 24px;
+    border:1px solid var(--gold-dim);
+    border-radius:999px;
+    background:transparent;
+    color:var(--gold-bright);
+    font-family:'Cormorant Garamond', serif;
+    font-size:0.95rem;
+    letter-spacing:0.12em;
+    cursor:pointer;
+    transition:background 0.3s ease, transform 0.3s ease;
+  }
+  .answer-reveal:hover{
+    background:rgba(199,164,94,0.12);
+    transform:translateY(-1px);
+  }
+  .answer{
+    margin-top:30px;
+    padding-top:28px;
+    border-top:1px solid var(--hairline);
+    color:var(--ivory-dim);
+  }
+  .answer-big{
+    margin-top:12px;
+    font-family:'Herr Von Muellerhoff', cursive;
+    font-size:2.8rem;
+    line-height:1;
+    color:var(--gold-bright);
+  }
+  .answer-small{
+    margin-top:18px;
+    font-style:italic;
+  }
+
+  footer{ text-align:center; padding:60px 6vw 70px; background:var(--emerald-deep); color:var(--gold-dim); }
+  footer .crest{ margin:0 auto 18px; }
+  footer p{ font-size:0.85rem; letter-spacing:0.1em; }
+
+  .fade-out{ opacity:0; filter:blur(6px); pointer-events:none; }
+  @media (max-width:640px){
+    .video-section .video-frame{
+      padding:7px;
+    }
+
+    .video-section{
+      padding-top:64px;
+      padding-bottom:74px;
+    }
+  }
+
+
+  /* ============================================================
+     SUBTLE AESTHETIC MOTION — keeps the romantic/luxury feel
+     without turning the page into an animation demo.
+     ============================================================ */
+
+  /* Soft floating movement for decorative fireflies already in the page */
+  .firefly{
+    animation:
+      fireflyDrift var(--drift, 8s) ease-in-out infinite alternate,
+      fireflyPulse var(--pulse, 4.5s) ease-in-out infinite;
+    will-change:transform, opacity;
+  }
+
+  @keyframes fireflyDrift{
+    0%   { transform:translate3d(0, 8px, 0); }
+    50%  { transform:translate3d(7px, -5px, 0); }
+    100% { transform:translate3d(-5px, 4px, 0); }
+  }
+
+  @keyframes fireflyPulse{
+    0%,100%{ opacity:.25; filter:blur(.1px); }
+    50%{ opacity:.9; filter:blur(0); }
+  }
+
+  /* A barely-visible warm shimmer crossing the video frame */
+  .video-frame{
+    overflow:hidden;
+  }
+
+  .video-frame::after{
+    content:"";
+    position:absolute;
+    top:-35%;
+    left:-45%;
+    width:24%;
+    height:170%;
+    background:linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,248,234,.10),
+      rgba(199,164,94,.12),
+      transparent
+    );
+    transform:rotate(12deg) translateX(-180%);
+    pointer-events:none;
+    animation:videoSheen 9s ease-in-out 2s infinite;
+  }
+
+  @keyframes videoSheen{
+    0%, 55%{ transform:rotate(12deg) translateX(-180%); opacity:0; }
+    62%{ opacity:1; }
+    75%,100%{ transform:rotate(12deg) translateX(620%); opacity:0; }
+  }
+
+  /* Images gently "settle" into place when their reveal animation fires */
+  .gallery-item{
+    transform:translateY(0);
+    transition:
+      transform .65s cubic-bezier(.2,.75,.2,1),
+      box-shadow .65s ease;
+  }
+
+  .gallery-item .frame-inner{
+    overflow:hidden;
+  }
+
+  .gallery-item img{
+    transition:
+      transform 1.1s cubic-bezier(.2,.7,.2,1),
+      filter .8s ease;
+  }
+
+  .gallery-item:hover{
+    transform:translateY(-5px);
+  }
+
+  .gallery-item:hover img{
+    transform:scale(1.035);
+    filter:saturate(1.03);
+  }
+
+  /* Gold rule gently breathes instead of flashing */
+  .hairline{
+    transform-origin:center;
+    animation:ruleBreath 5s ease-in-out infinite;
+  }
+
+  @keyframes ruleBreath{
+    0%,100%{ opacity:.48; transform:scaleX(.88); }
+    50%{ opacity:.82; transform:scaleX(1); }
+  }
+
+  /* Small lift when the final clue becomes interactive */
+  .answer-reveal{
+    position:relative;
+    overflow:hidden;
+  }
+
+  .answer-reveal::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+      110deg,
+      transparent 30%,
+      rgba(255,248,234,.12) 48%,
+      transparent 66%
+    );
+    transform:translateX(-120%);
+    animation:buttonSheen 6s ease-in-out 3s infinite;
+    pointer-events:none;
+  }
+
+  @keyframes buttonSheen{
+    0%,65%{ transform:translateX(-120%); }
+    82%,100%{ transform:translateX(120%); }
+  }
+
+  /* Letter/card depth: almost imperceptible movement */
+  .letter-card,
+  .clue-card{
+    transition:
+      transform .7s cubic-bezier(.2,.75,.2,1),
+      box-shadow .7s ease;
+  }
+
+  .letter-card:hover,
+  .clue-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 26px 65px -38px rgba(0,0,0,.42);
+  }
+
+  /* Smoothly reveal captions after their photo */
+  .memory-caption{
+    transition:opacity .6s ease, transform .6s ease;
+  }
+
+  /* Accessibility: never force motion on users who ask for less */
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+
+    .firefly,
+    .video-frame::after,
+    .hairline,
+    .answer-reveal::before{
+      animation:none !important;
+    }
+
+    .gallery-item,
+    .gallery-item img,
+    .letter-card,
+    .clue-card,
+    .memory-caption{
+      transition:none !important;
+    }
+  }
+
+  @media (hover:none){
+    .gallery-item:hover,
+    .letter-card:hover,
+    .clue-card:hover{
+      transform:none;
+      box-shadow:none;
+    }
+
+    .gallery-item:hover img{
+      transform:none;
+      filter:none;
+    }
+  }
+
+
+    /* Final clue answer — readable vintage display */
+    .answer-big{
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-weight: 600;
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+      line-height: 1.2;
+      letter-spacing: 0.02em;
+    }
+
+    @media (max-width: 600px){
+      .answer-big{
+        font-size: clamp(1.55rem, 7vw, 2.1rem);
+        line-height: 1.25;
+      }
+    }
+</style>
+</head>
+<body>
+
+<!-- ============ COUNTDOWN PAGE ============ -->
+<div id="countdownPage">
+  <div class="fireflies" id="fireflies1"></div>
+
+  <svg class="vine tl" viewBox="0 0 120 120"><path d="M4 4 C 30 6, 20 40, 46 44 C 66 47, 58 20, 84 22" stroke="#93A695" stroke-width="1.4" fill="none" opacity="0.8"/><ellipse cx="22" cy="20" rx="7" ry="3.4" fill="#8C7238" transform="rotate(30 22 20)"/><ellipse cx="46" cy="44" rx="6" ry="3" fill="#93A695" transform="rotate(-20 46 44)"/><ellipse cx="70" cy="26" rx="6.5" ry="3.2" fill="#8C7238" transform="rotate(50 70 26)"/></svg>
+  <svg class="vine tr" viewBox="0 0 120 120"><path d="M4 4 C 30 6, 20 40, 46 44 C 66 47, 58 20, 84 22" stroke="#93A695" stroke-width="1.4" fill="none" opacity="0.8"/><ellipse cx="22" cy="20" rx="7" ry="3.4" fill="#8C7238" transform="rotate(30 22 20)"/><ellipse cx="46" cy="44" rx="6" ry="3" fill="#93A695" transform="rotate(-20 46 44)"/><ellipse cx="70" cy="26" rx="6.5" ry="3.2" fill="#8C7238" transform="rotate(50 70 26)"/></svg>
+  <svg class="vine bl" viewBox="0 0 120 120"><path d="M4 4 C 30 6, 20 40, 46 44 C 66 47, 58 20, 84 22" stroke="#93A695" stroke-width="1.4" fill="none" opacity="0.8"/><ellipse cx="22" cy="20" rx="7" ry="3.4" fill="#8C7238" transform="rotate(30 22 20)"/><ellipse cx="46" cy="44" rx="6" ry="3" fill="#93A695" transform="rotate(-20 46 44)"/><ellipse cx="70" cy="26" rx="6.5" ry="3.2" fill="#8C7238" transform="rotate(50 70 26)"/></svg>
+  <svg class="vine br" viewBox="0 0 120 120"><path d="M4 4 C 30 6, 20 40, 46 44 C 66 47, 58 20, 84 22" stroke="#93A695" stroke-width="1.4" fill="none" opacity="0.8"/><ellipse cx="22" cy="20" rx="7" ry="3.4" fill="#8C7238" transform="rotate(30 22 20)"/><ellipse cx="46" cy="44" rx="6" ry="3" fill="#93A695" transform="rotate(-20 46 44)"/><ellipse cx="70" cy="26" rx="6.5" ry="3.2" fill="#8C7238" transform="rotate(50 70 26)"/></svg>
+
+  <div class="countdown-layout">
+    <div class="countdown-text reveal-up is-visible">
+      <div class="crest"><span>T</span></div>
+      <p class="eyebrow">A Celebration Awaits</p>
+      <h1 class="display-name">Tabassum</h1>
+      <p class="subtitle">Her birthday — the 5th of September</p>
+
+      <div class="countdown-grid">
+        <div class="count-block"><span class="num" id="cd-days">00</span><label>Days</label></div>
+        <div class="count-sep">·</div>
+        <div class="count-block"><span class="num" id="cd-hours">00</span><label>Hours</label></div>
+        <div class="count-sep">·</div>
+        <div class="count-block"><span class="num" id="cd-mins">00</span><label>Minutes</label></div>
+        <div class="count-sep">·</div>
+        <div class="count-block"><span class="num" id="cd-secs">00</span><label>Seconds</label></div>
+      </div>
+
+      <div class="hairline"></div>
+      <p class="footer-note">Patience is its own kind of elegance.</p>
+    </div>
+
+    <div class="portrait-frame reveal-up d2 is-visible">
+      <div class="inner">
+        <!-- HERO PORTRAIT GOES HERE: add hero-photo.jpg next to this file -->
+        <img src="hero-photo.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="placeholder-text" style="display:none; align-items:center; justify-content:center;">Her Portrait<br>Belongs Here</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden owner-only preview trigger: the still firefly, bottom-right -->
+  <button class="hidden-seal" id="hiddenSeal" type="button" aria-label=""></button>
+</div>
+
+<!-- ============ REVEAL PAGE ============ -->
+<div id="revealPage" hidden>
+
+  <button class="music-toggle" id="musicToggle" type="button">Play the Music &#9835;</button>
+
+  <!-- YOUR MUSIC GOES HERE: add music.mp3 next to this file -->
+  <audio id="bgMusic" loop preload="none">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <header class="hero">
+    <div class="fireflies" id="fireflies2"></div>
+    <svg class="vine tl" viewBox="0 0 120 120"><path d="M4 4 C 30 6, 20 40, 46 44 C 66 47, 58 20, 84 22" stroke="#93A695" stroke-width="1.4" fill="none" opacity="0.8"/><ellipse cx="22" cy="20" rx="7" ry="3.4" fill="#8C7238" transform="rotate(30 22 20)"/><ellipse cx="46" cy="44" rx="6" ry="3" fill="#93A695" transform="rotate(-20 46 44)"/><ellipse cx="70" cy="26" rx="6.5" ry="3.2" fill="#8C7238" transform="rotate(50 70 26)"/></svg>
+    <svg class="vine br" viewBox="0 0 120 120"><path d="M4 4 C 30 6, 20 40, 46 44 C 66 47, 58 20, 84 22" stroke="#93A695" stroke-width="1.4" fill="none" opacity="0.8"/><ellipse cx="22" cy="20" rx="7" ry="3.4" fill="#8C7238" transform="rotate(30 22 20)"/><ellipse cx="46" cy="44" rx="6" ry="3" fill="#93A695" transform="rotate(-20 46 44)"/><ellipse cx="70" cy="26" rx="6.5" ry="3.2" fill="#8C7238" transform="rotate(50 70 26)"/></svg>
+
+    <div class="hero-text reveal-up">
+      <p class="eyebrow">To Tabassum, With Love</p>
+      <h1>Happy Birthday</h1>
+      <p class="hero-sub">Every year gives me one more reason to be grateful you exist. Today, we celebrate you.</p>
+      <div class="hairline"></div>
+    </div>
+
+    <div class="hero-portrait portrait-frame reveal-up d2">
+      <div class="inner">
+        <!-- HERO PORTRAIT GOES HERE: add hero-photo.jpg next to this file -->
+        <img src="hero-photo.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="placeholder-text" style="display:none; align-items:center; justify-content:center;">Her Portrait<br>Belongs Here</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="video-section" id="video">
+    <div class="section-head reveal-up">
+      <p class="eyebrow">A Message For You</p>
+      <h2>Before You Open Anything</h2>
+    </div>
+    <div class="video-frame reveal-up d1">
+      <!-- YOUR VIDEO GOES HERE: add wishes.mp4 (and optionally poster.jpg) next to this file -->
+      <video id="wishVideo" controls poster="poster.jpg">
+        <source src="wishes.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <p class="video-caption reveal-up d2">This video is not the end. There's a little more waiting for you.</p>
+  </section>
+
+  <section class="gallery-section" id="gallery">
+    <div class="section-head reveal-up">
+      <p class="eyebrow">A Small Archive</p>
+      <h2>Moments I Keep Close</h2>
+    </div>
+    <div class="gallery-grid">
+      <!-- YOUR PHOTOS GO HERE: create a /photos folder with photo-1.jpg ... photo-6.jpg -->
+      <div class="gallery-item reveal-up">
+        <div class="frame-inner">
+          <img src="photos/photo-1.jpg" loading="lazy" decoding="async" alt="A memory together" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="placeholder-text" style="display:none;">Photograph<br>Forthcoming</div>
+        </div>
+        <p class="memory-caption">This is another little part of you I love to see.</p>
+      </div>
+      <div class="gallery-item reveal-up d1">
+        <div class="frame-inner">
+          <img src="photos/photo-2.jpg" loading="lazy" decoding="async" alt="A memory together" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="placeholder-text" style="display:none;">Photograph<br>Forthcoming</div>
+        </div>
+        <p class="memory-caption">Maybe you don't remember this moment. But I do.</p>
+      </div>
+      <div class="gallery-item reveal-up d2">
+        <div class="frame-inner">
+          <img src="photos/photo-3.jpg" loading="lazy" decoding="async" alt="A memory together" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="placeholder-text" style="display:none;">Photograph<br>Forthcoming</div>
+        </div>
+        <p class="memory-caption">One of my favorite versions of us.</p>
+      </div>
+      <div class="gallery-item reveal-up">
+        <div class="frame-inner">
+          <img src="photos/photo-4.jpg" loading="lazy" decoding="async" alt="A memory together" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="placeholder-text" style="display:none;">Photograph<br>Forthcoming</div>
+        </div>
+        <p class="memory-caption">Our first Eid together, a memory I still hold close.</p>
+      </div>
+      <div class="gallery-item reveal-up d1">
+        <div class="frame-inner">
+          <img src="photos/photo-5.jpg" loading="lazy" decoding="async" alt="A memory together" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="placeholder-text" style="display:none;">Photograph<br>Forthcoming</div>
+        </div>
+        <p class="memory-caption">The day we turned a moment into a promise.</p>
+      </div>
+      <div class="gallery-item reveal-up d2">
+        <div class="frame-inner">
+          <img src="photos/photo-6.jpg" loading="lazy" decoding="async" alt="A memory together" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="placeholder-text" style="display:none;">Photograph<br>Forthcoming</div>
+        </div>
+        <p class="memory-caption">A little moment I would choose, all over again.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="clue-section" id="finalClue">
+    <div class="fireflies" id="fireflies4"></div>
+    <div class="section-head reveal-up">
+      <p class="eyebrow">One Last Little Secret</p>
+      <h2>Not Everything Is Here</h2>
+    </div>
+
+    <div class="clue-card reveal-up d1">
+      <p class="clue-intro">You've reached the end of the little world I made for you.</p>
+      <p class="clue-intro">But your birthday surprise isn't finished yet.</p>
+
+      <div class="clue-divider"></div>
+
+      <p class="clue-riddle">
+        I am close to you, but rarely seen.<br>
+        I wait below where dreams begin.<br>
+        I hold a little secret tonight.<br>
+        Find me where I hide out of sight.
+      </p>
+
+      <p class="clue-hint">Where am I?</p>
+
+      <button class="answer-reveal" id="answerReveal" type="button">
+        I think I know...
+      </button>
+
+      <div class="answer" id="answer" hidden>
+        <p>You found the last clue.</p>
+        <p class="answer-big">Now look under your bed. ❤️</p>
+        <p class="answer-small">Happy birthday, my love.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="crest" style="margin:0 auto 18px;"><span>T</span></div>
+    <p>MADE WITH LOVE &mdash; FOR TABASSUM</p>
+  </footer>
+
+</div>
+
+<script>
+  // ===== TARGET DATE =====
+  const targetDate = new Date('2026-09-05T00:00:00');
+
+  const countdownPage = document.getElementById('countdownPage');
+  const revealPage = document.getElementById('revealPage');
+  const hiddenSeal = document.getElementById('hiddenSeal');
+  const musicToggle = document.getElementById('musicToggle');
+  const bgMusic = document.getElementById('bgMusic');
+
+  let revealed = false;
+
+  function pad(n){ return String(n).padStart(2, '0'); }
+
+  function setNum(el, value){
+    if (el.textContent !== value){
+      el.classList.add('tick');
+      setTimeout(() => { el.textContent = value; el.classList.remove('tick'); }, 140);
+    }
+  }
+
+  function updateCountdown(){
+    if (revealed) return;
+    const now = new Date();
+    const diff = targetDate - now;
+    if (diff <= 0){ reveal(); return; }
+
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff / 3600000) % 24);
+    const mins = Math.floor((diff / 60000) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+
+    setNum(document.getElementById('cd-days'), pad(days));
+    setNum(document.getElementById('cd-hours'), pad(hours));
+    setNum(document.getElementById('cd-mins'), pad(mins));
+    setNum(document.getElementById('cd-secs'), pad(secs));
+  }
+
+  function reveal(){
+    revealed = true;
+    countdownPage.classList.add('fade-out');
+    setTimeout(() => {
+      countdownPage.style.display = 'none';
+      revealPage.hidden = false;
+      window.scrollTo(0,0);
+      initRevealAnimations();
+      startMusicOnReveal();
+    }, 900);
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+  hiddenSeal.addEventListener('click', reveal);
+
+  // ===== Music: auto-start on reveal, duck for video, manual toggle still works =====
+  // musicWanted = the person's intent (do they want music playing right now).
+  // duckedForVideo = true while the video is the one pausing it, so we know to resume after.
+  let musicWanted = true;
+  let duckedForVideo = false;
+
+  function setToggleLabel(){
+    musicToggle.textContent = (!bgMusic.paused) ? 'Pause the Music \u266B' : 'Play the Music \u266B';
+  }
+
+  function startMusicOnReveal(){
+    bgMusic.volume = 1;
+    const playPromise = bgMusic.play();
+    if (playPromise !== undefined){
+      playPromise.then(setToggleLabel).catch(() => {
+        // Browser blocked autoplay-with-sound until a real user gesture happens.
+        // Start it the instant they tap/click anywhere on the page.
+        const startOnFirstTouch = () => {
+          if (musicWanted){
+            bgMusic.play().then(setToggleLabel).catch(() => {});
+          }
+          document.removeEventListener('click', startOnFirstTouch);
+          document.removeEventListener('touchstart', startOnFirstTouch);
+        };
+        document.addEventListener('click', startOnFirstTouch, { once:true });
+        document.addEventListener('touchstart', startOnFirstTouch, { once:true });
+      });
+    }
+  }
+
+  musicToggle.addEventListener('click', () => {
+    if (!bgMusic.paused){
+      musicWanted = false;
+      bgMusic.pause();
+    } else {
+      musicWanted = true;
+      bgMusic.play().catch(() => {});
+    }
+    setToggleLabel();
+  });
+
+  // Duck music automatically when the wish video plays, resume when it stops
+  const wishVideo = document.getElementById('wishVideo');
+  if (wishVideo){
+    wishVideo.addEventListener('play', () => {
+      if (!bgMusic.paused){
+        duckedForVideo = true;
+        bgMusic.pause();
+        setToggleLabel();
+      }
+    });
+    const resumeIfDucked = () => {
+      if (duckedForVideo && musicWanted){
+        bgMusic.play().catch(() => {});
+      }
+      duckedForVideo = false;
+      setToggleLabel();
+    };
+    wishVideo.addEventListener('pause', resumeIfDucked);
+    wishVideo.addEventListener('ended', resumeIfDucked);
+  }
+
+  // ===== Fireflies =====
+  function spawnFireflies(containerId, count){
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    for (let i = 0; i < count; i++){
+      const f = document.createElement('div');
+      f.className = 'firefly';
+      const startX = Math.random() * 100;
+      const startY = 60 + Math.random() * 40;
+      const dx = (Math.random() * 60 - 30);
+      const dy = -(60 + Math.random() * 60);
+      const dur = 6 + Math.random() * 8;
+      const delay = Math.random() * 8;
+      const peak = 0.4 + Math.random() * 0.5;
+      f.style.left = startX + '%';
+      f.style.top = startY + '%';
+      f.style.setProperty('--dx', dx + 'px');
+      f.style.setProperty('--dy', dy + 'px');
+      f.style.setProperty('--peak', peak);
+      f.style.animationDuration = dur + 's, ' + (2 + Math.random()*2) + 's';
+      f.style.animationDelay = delay + 's, ' + delay + 's';
+      container.appendChild(f);
+    }
+  }
+  spawnFireflies('fireflies1', 18);
+  spawnFireflies('fireflies2', 14);
+  spawnFireflies('fireflies3', 10);
+  spawnFireflies('fireflies4', 12);
+
+
+  // Gentle per-firefly timing variation so the background feels organic.
+  document.querySelectorAll('.firefly').forEach((el, i) => {
+    el.style.setProperty('--drift', `${7 + (i % 5) * 1.15}s`);
+    el.style.setProperty('--pulse', `${3.8 + (i % 4) * .7}s`);
+    el.style.animationDelay = `${(i % 7) * -0.65}s`;
+  });
+
+  // ===== FINAL CLUE =====
+  const answerReveal = document.getElementById('answerReveal');
+  const answer = document.getElementById('answer');
+
+  if (answerReveal && answer){
+    answerReveal.addEventListener('click', () => {
+      answer.hidden = false;
+      answerReveal.hidden = true;
+      answer.scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+  }
+
+  // ===== Scroll-triggered reveal animations =====
+  function initRevealAnimations(){
+    const targets = document.querySelectorAll('#revealPage .reveal-up');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    targets.forEach(t => io.observe(t));
+  }
+</script>
+
+</body>
+</html>
